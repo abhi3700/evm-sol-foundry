@@ -12,3 +12,11 @@ contract Counter {
         number++;
     }
 }
+
+// defining the interface
+
+interface ICounter {
+    function number() external view returns (uint256);
+    function setNumber(uint256 newNumber) external;
+    function increment() external;
+}
