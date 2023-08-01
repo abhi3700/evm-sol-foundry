@@ -63,7 +63,7 @@ contract ReentrancyAttackTest is Test {
         // 4. Call Attack.attack sending 1 ether (using Account 3 (Eve)).
         //     You will not get 3 Ethers back (2 Ether stolen from Alice and Bob,
         //     plus 1 Ether sent from this contract). Instead the `withdraw` function
-        //     would fail & hence, the entire `attack` function would roll back although
+        //     would fail on second attempt & hence, the entire `attack` function would roll back although
         //     `deposit` works.
         hoax(EVE, 1 ether);
         vm.expectRevert();
