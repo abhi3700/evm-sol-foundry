@@ -8,6 +8,11 @@ import {IERC20} from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 import {Owned} from "solmate/auth/Owned.sol";
 import {console2} from "forge-std/Test.sol";
 
+/**
+ * ERC-4626 followed
+ *
+ */
+
 contract Vault is ERC20, ReentrancyGuard, Owned {
     // using SafeTransferLib for IERC20;
 
@@ -23,8 +28,11 @@ contract Vault is ERC20, ReentrancyGuard, Owned {
     mapping(address => uint256) public depositBalances;
     uint256 public totalDepositBalances;
 
-    constructor(address _token) ERC20("Vault token", "VAULT", 18) Owned(msg.sender) {
-        token = IERC20(_token);
+    constructor(ERC20 _token, string memory _name, string memory _symbol)
+        ERC20(_name, _symbol, _token.decimals())
+        Owned(msg.sender)
+    {
+        token = IERC20(address(_token));
     }
 
     function setToken(address _token) external onlyOwner {

@@ -19,7 +19,7 @@ contract VaultTest is Test {
 
     function setUp() public {
         token = new MyToken("DAI", "DAI", 18);
-        vault = new Vault(address(token));
+        vault = new Vault(token, "Vault token", "VAULT");
 
         // mint some DAI tokens
         token.mint(ALICE, 100);
