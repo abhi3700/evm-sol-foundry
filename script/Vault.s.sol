@@ -2,14 +2,16 @@
 pragma solidity ^0.8.13;
 
 import {Script, console2} from "forge-std/Script.sol";
-import {Counter} from "../src/Counter.sol";
+import {Vault} from "../src/Vault.sol";
+import {MyToken} from "../src/MyToken.sol";
 
-contract CounterScript is Script {
+contract VaultScript is Script {
     function setUp() public {}
 
     function run() public {
         vm.startBroadcast();
-        Counter counter = new Counter();
+        MyToken token = new MyToken("DAI", "DAI", 18);
+        Vault vault = new Vault(address(token));
         vm.stopBroadcast();
     }
 }
