@@ -2,7 +2,7 @@
 pragma solidity ^0.8.13;
 
 import {Test, console2} from "forge-std/Test.sol";
-import {EtherStore, Attack} from "../src/hacks/ReentrancyAttack.sol";
+import {EtherStore, Attack} from "../../src/hacks/ReentrancyAttack.sol";
 
 contract ReentrancyAttackTest is Test {
     EtherStore public etherStore;
