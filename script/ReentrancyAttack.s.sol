@@ -10,8 +10,10 @@ contract ReentrancyAttackScript is Script {
     function run() public {
         vm.startBroadcast();
         EtherStore etherStore = new EtherStore();
+        console2.log("EtherStore contract: ", address(etherStore));
 
         Attack attack = new Attack(address(etherStore));
+        console2.log("Attack contract: ", address(attack));
 
         vm.stopBroadcast();
     }

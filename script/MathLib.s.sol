@@ -11,6 +11,7 @@ contract MathLibScript is Script {
         vm.startBroadcast();
         // solhint-disable-next-line
         A contractA = new A();
+        console2.log("contract: ", address(contractA));
         vm.stopBroadcast();
     }
 }

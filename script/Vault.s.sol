@@ -17,6 +17,7 @@ contract VaultScript is Script {
         vm.startBroadcast();
         MyToken token = new MyToken("DAI", "DAI", 18);
         Vault vault = new Vault(token, "Vault token", "VAULT");
+        console2.log("Vault contract: ", address(vault));
         vm.stopBroadcast();
     }
 }

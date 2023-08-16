@@ -10,6 +10,7 @@ contract CounterScript is Script {
     function run() public {
         vm.startBroadcast();
         Counter counter = new Counter();
+        console2.log("contract: ", address(counter));
         vm.stopBroadcast();
     }
 }
