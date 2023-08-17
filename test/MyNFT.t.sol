@@ -13,10 +13,11 @@ contract MyNFTTest is Test {
     event Burned(address indexed holder, uint256 indexed tokenId);
 
     function setUp() public {
-        myNFT = new MyNFT("Zomato", "ZOM");
+        myNFT = new MyNFT("Zomato", "ZOM", bytes("https://awscloud/"));
 
         assertEq(myNFT.name(), "Zomato");
         assertEq(myNFT.symbol(), "ZOM");
+        assertEq(myNFT.baseURI(), "https://awscloud/");
 
         // for calling function
         deal(ALICE, 100);

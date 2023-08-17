@@ -29,9 +29,9 @@ contract SignatureTest is Test {
 
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(privateKey, messageHash);
 
-        bytes32 invalidMessageHash = keccak256("Secret Message");
+        bytes32 invalidMessageHash = keccak256("Secret Invalid Message");
 
-        address signer = ecrecover(invalidMessageHash, v, r, s);
-        assertEq(signer != pubKey, false);
+        address impersonatedSigner = ecrecover(invalidMessageHash, v, r, s);
+        assertEq(impersonatedSigner != pubKey, true);
     }
 }
