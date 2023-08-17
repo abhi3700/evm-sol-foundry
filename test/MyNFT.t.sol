@@ -7,7 +7,7 @@ import {MyNFT} from "../src/MyNFT.sol";
 contract MyNFTTest is Test {
     MyNFT public myNFT;
 
-    address public constant alice = address(0x1);
+    address public constant ALICE = address(0x1);
 
     event Minted(address indexed caller, address indexed to, uint256 indexed tokenId);
     event Burned(address indexed holder, uint256 indexed tokenId);
@@ -19,61 +19,71 @@ contract MyNFTTest is Test {
         assertEq(myNFT.symbol(), "ZOM");
 
         // for calling function
-        deal(alice, 100);
-        assertEq(alice.balance, 100);
+        deal(ALICE, 100);
+        assertEq(ALICE.balance, 100);
 
         // mint some nfts
-        myNFT.mint(alice, 1);
-        assertEq(myNFT.ownerOf(1), alice);
+        myNFT.mint(ALICE, 1);
+        assertEq(myNFT.ownerOf(1), ALICE);
+    }
+
+    // === tokenURI
+    function testRevertTokenURIInvalidToken() public {
+        vm.expectRevert("NOT_MINTED");
+        myNFT.tokenURI(2);
+    }
+
+    function testTokenURIWorks() public {
+        assertEq(myNFT.tokenURI(1), "https://awscloud/1");
     }
 
     // === mint
 
     function testRevertMintAlreadyMintedToken() public {
         vm.expectRevert("ALREADY_MINTED");
-        myNFT.mint(alice, 1);
+        myNFT.mint(ALICE, 1);
     }
 
     function testRevertMintByNonAdmin() public {
-        vm.prank(alice);
+        vm.prank(ALICE);
         vm.expectRevert("UNAUTHORIZED");
-        myNFT.mint(alice, 2);
+        myNFT.mint(ALICE, 2);
     }
 
     function testMintWorks() public {
         vm.expectEmit(true, true, true, true);
-        emit Minted(address(this), alice, 2);
-        myNFT.mint(alice, 2);
-        assertEq(myNFT.ownerOf(2), alice);
+        emit Minted(address(this), ALICE, 2);
+        myNFT.mint(ALICE, 2);
+        assertEq(myNFT.ownerOf(2), ALICE);
     }
 
     function testMintTwiceSuccessively() public {
-        myNFT.mint(alice, 2);
-        assertEq(myNFT.ownerOf(2), alice);
+        myNFT.mint(ALICE, 2);
+        assertEq(myNFT.ownerOf(2), ALICE);
 
-        myNFT.mint(alice, 3);
-        assertEq(myNFT.ownerOf(3), alice);
+        myNFT.mint(ALICE, 3);
+        assertEq(myNFT.ownerOf(3), ALICE);
 
-        assertEq(myNFT.balanceOf(alice), 3);
+        assertEq(myNFT.balanceOf(ALICE), 3);
     }
 
     function testMintTwiceSuccessivelyWithTimeGap() public {
-        myNFT.mint(alice, 2);
-        assertEq(myNFT.ownerOf(2), alice);
+        myNFT.mint(ALICE, 2);
+        assertEq(myNFT.ownerOf(2), ALICE);
         assertEq(block.timestamp, 1);
 
         // set time to 4
         vm.warp(4);
         assertEq(block.timestamp, 4);
-        myNFT.mint(alice, 3);
-        assertEq(myNFT.ownerOf(3), alice);
+        myNFT.mint(ALICE, 3);
+        assertEq(myNFT.ownerOf(3), ALICE);
 
         // forwarded time by 10s from last tstamp
         skip(10);
-        myNFT.mint(alice, 4);
-        assertEq(myNFT.ownerOf(4), alice);
+        myNFT.mint(ALICE, 4);
+        assertEq(myNFT.ownerOf(4), ALICE);
 
-        assertEq(myNFT.balanceOf(alice), 4);
+        assertEq(myNFT.balanceOf(ALICE), 4);
     }
 
     // === burn
@@ -87,9 +97,9 @@ contract MyNFTTest is Test {
     /// address who owns the nft token id, can only burn
     function testBurnWorks() public {
         vm.expectEmit(true, true, true, true);
-        emit Burned(alice, 1);
-        vm.prank(alice);
+        emit Burned(ALICE, 1);
+        vm.prank(ALICE);
         myNFT.burn(1);
-        assertEq(myNFT.balanceOf(alice), 0);
+        assertEq(myNFT.balanceOf(ALICE), 0);
     }
 }
