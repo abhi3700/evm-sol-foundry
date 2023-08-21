@@ -20,7 +20,7 @@ contract RandomNumber is VRFConsumerBaseV2, ConfirmedOwner {
     }
 
     mapping(uint256 => RequestStatus) public s_requests; /* requestId --> requestStatus */
-    VRFCoordinatorV2Interface private COORDINATOR;
+    VRFCoordinatorV2Interface private coordinator;
 
     // Your subscription ID.
     uint64 private s_subscriptionId;
@@ -53,7 +53,7 @@ contract RandomNumber is VRFConsumerBaseV2, ConfirmedOwner {
         VRFConsumerBaseV2(coordinatorContract)
         ConfirmedOwner(msg.sender)
     {
-        COORDINATOR = VRFCoordinatorV2Interface(coordinatorContract);
+        coordinator = VRFCoordinatorV2Interface(coordinatorContract);
         s_subscriptionId = subscriptionId;
     }
 
@@ -61,7 +61,7 @@ contract RandomNumber is VRFConsumerBaseV2, ConfirmedOwner {
     function requestRandomWords() external onlyOwner returns (uint256 requestId) {
         // Will revert if subscription is not set and funded.
         requestId =
-            COORDINATOR.requestRandomWords(keyHash, s_subscriptionId, requestConfirmations, callbackGasLimit, numWords);
+            coordinator.requestRandomWords(keyHash, s_subscriptionId, requestConfirmations, callbackGasLimit, numWords);
         s_requests[requestId] = RequestStatus({randomWords: new uint256[](0), exists: true, fulfilled: false});
         requestIds.push(requestId);
         lastRequestId = requestId;

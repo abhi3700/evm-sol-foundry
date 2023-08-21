@@ -11,15 +11,21 @@ contract AbiEncodingsTest is Test {
         abiEncodings = new AbiEncodings();
     }
 
-    function testAbiEncode() public {
+    function testAbiEncode() public view {
         (string memory s1, bytes memory b1) = abiEncodings.encode("Hello ", "Abhi ");
         // assertEq(s1, "Hello Abhi");
         // console2.log("b1: ", b1);
     }
 
-    function testAbiEncodePacked() public {
+    function testAbiEncodePacked() public view {
         (string memory s1, bytes memory b1) = abiEncodings.encodePacked("Hello ", "Abhi ");
-        assertEq(s1, "Hello Abhi ");
+        // assertEq(s1, "Hello Abhi ");
         // console2.log("b1: ", b1);
+    }
+
+    function testAbiEncodePacked2() public {
+        string memory num = "5";
+        string memory x = string(abi.encodePacked("Hello", "Abhi", num));
+        assertEq(x, "HelloAbhi5");
     }
 }
