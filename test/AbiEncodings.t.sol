@@ -28,4 +28,11 @@ contract AbiEncodingsTest is Test {
         string memory x = string(abi.encodePacked("Hello", "Abhi", num));
         assertEq(x, "HelloAbhi5");
     }
+
+    function testAbiEncodePacked3() public {
+        string memory color = "#e53238";
+        string memory x = string(abi.encodePacked("<svg viewBox=\"0 0 58 58\"", color));
+        assertEq(x, "<svg viewBox=\"0 0 58 58\"#e53238");
+        console2.logBytes(bytes("nft 1"));
+    }
 }
