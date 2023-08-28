@@ -47,7 +47,7 @@ contract Voting {
             // if winner not set already
             winningCandidate = candidate;
         } else {
-            if ((_winner != candidate) && _winnerVotes < _candidateVotes) {
+            if (_winner != candidate && _winnerVotes < _candidateVotes) {
                 winningCandidate = candidate;
             }
         }
