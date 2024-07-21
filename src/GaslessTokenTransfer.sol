@@ -17,7 +17,6 @@ pragma solidity 0.8.18;
  *
  * For image, refer the diagram in "evm.drawio" ERCs tab.
  */
-
 import {IERC20Permit} from "openzeppelin-contracts/contracts/token/ERC20/extensions/IERC20Permit.sol";
 import {IERC20} from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 
@@ -49,5 +48,31 @@ contract GaslessTokenTransfer {
 
         // transfer fee to the caller
         IERC20(token).transferFrom(sender, msg.sender, fee);
+    }
+
+    function getPermitHash(
+        bytes32 domainSeparator,
+        address owner,
+        address spender,
+        uint256 value,
+        uint256 nonce,
+        uint256 deadline
+    ) public pure returns (bytes32) {
+        return keccak256(
+            abi.encodePacked(
+                "\x19\x01",
+                domainSeparator,
+                keccak256(
+                    abi.encode(
+                        keccak256("Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)"),
+                        owner,
+                        spender,
+                        value,
+                        nonce,
+                        deadline
+                    )
+                )
+            )
+        );
     }
 }

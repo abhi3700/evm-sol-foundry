@@ -10,10 +10,10 @@ import {GaslessTokenTransfer} from "../src/GaslessTokenTransfer.sol";
 
 contract GaslessTokenTransferTest is Test {
     // define a token
-    MyToken private _token;
+    MyToken private token;
 
     // attach a gaslesstoken transfer functionality
-    GaslessTokenTransfer private _gasless;
+    GaslessTokenTransfer private gasless;
 
     address public sender;
     address public receiver;
@@ -29,8 +29,8 @@ contract GaslessTokenTransferTest is Test {
 
     function setUp() public {
         // deploy the contracts
-        _token = new MyToken("DAI", "DAI", 18);
-        _gasless = new GaslessTokenTransfer();
+        token = new MyToken("DAI", "DAI", 18);
+        gasless = new GaslessTokenTransfer();
 
         // Here, both sender and receiver don't have ETH so as to ensure this transfer.
         sender = vm.addr(SENDER_PRIVATE_KEY);
@@ -43,53 +43,34 @@ contract GaslessTokenTransferTest is Test {
         assertEq(address(spenderCharlie).balance, 100);
 
         // DAI token minter & minting
-        assertEq(IERC20(address(_token)).balanceOf(address(this)), 10_000_000 * 1e18); // 10 M minted to minter
-        IERC20(address(_token)).transfer(sender, AMOUNT + FEE);
-        assertEq(IERC20(address(_token)).balanceOf(sender), AMOUNT + FEE);
+        assertEq(IERC20(address(token)).balanceOf(address(this)), 10_000_000 * 1e18); // 10 M minted to minter
+        IERC20(address(token)).transfer(sender, AMOUNT + FEE);
+        assertEq(IERC20(address(token)).balanceOf(sender), AMOUNT + FEE);
     }
 
     function testGasless() public {
         uint256 deadline = block.timestamp + 60; // now + 60s
 
-        bytes32 permitmessageHash =
-            _getPermitHash(sender, address(_gasless), AMOUNT + FEE, _token.nonces(sender), deadline);
+        bytes32 permitmessageHash = gasless.getPermitHash(
+            token.DOMAIN_SEPARATOR(), sender, address(gasless), AMOUNT + FEE, token.nonces(sender), deadline
+        );
+        // Alice signs the message with her private key
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(SENDER_PRIVATE_KEY, permitmessageHash);
+
+        // Charlie pays the gas fee for the message
         vm.prank(spenderCharlie);
-        _gasless.send(address(_token), sender, receiver, AMOUNT, FEE, deadline, v, r, s);
+        gasless.send(address(token), sender, receiver, AMOUNT, FEE, deadline, v, r, s);
 
         // assert the token balance of sender resets to zero as the sender was funded by AMOUNT + FEE.
-        assertEq(IERC20(address(_token)).balanceOf(sender), 0);
+        assertEq(IERC20(address(token)).balanceOf(sender), 0);
 
-        // assert the token balance of sender increased by AMOUNT
-        assertEq(IERC20(address(_token)).balanceOf(receiver), AMOUNT);
+        // assert the token balance of receiver increased by AMOUNT
+        assertEq(IERC20(address(token)).balanceOf(receiver), AMOUNT);
 
         // assert the token balance of spender increased by FEE
-        assertEq(IERC20(address(_token)).balanceOf(spenderCharlie), FEE);
-        console2.log("charlie DAI balance", IERC20(address(_token)).balanceOf(spenderCharlie));
+        assertEq(IERC20(address(token)).balanceOf(spenderCharlie), FEE);
+        console2.log("charlie DAI balance", IERC20(address(token)).balanceOf(spenderCharlie));
 
-        assertEq(_token.nonces(sender), 1);
-    }
-
-    function _getPermitHash(address owner, address spender, uint256 value, uint256 nonce, uint256 deadline)
-        private
-        view
-        returns (bytes32)
-    {
-        return keccak256(
-            abi.encodePacked(
-                "\x19\x01",
-                _token.DOMAIN_SEPARATOR(),
-                keccak256(
-                    abi.encode(
-                        keccak256("Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)"),
-                        owner,
-                        spender,
-                        value,
-                        nonce,
-                        deadline
-                    )
-                )
-            )
-        );
+        assertEq(token.nonces(sender), 1);
     }
 }
