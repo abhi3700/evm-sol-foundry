@@ -18,4 +18,10 @@ contract DelegateCallTest is Test {
         assertEq(contractA.value(), 0);
         assertEq(contractB.value(), 20);
     }
+
+    function testDouble() public {
+        uint256 result = contractB.double(contractA.getAddress(), 20);
+        assertEq(result, 40);
+        assertEq(contractB.value(), 40);
+    }
 }
