@@ -1,14 +1,12 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.18;
+pragma solidity 0.8.27;
 
 import {ERC721} from "solmate/tokens/ERC721.sol";
 import {Owned} from "solmate/auth/Owned.sol";
-import "openzeppelin-contracts/contracts/utils/Strings.sol";
+import {LibString} from "solmate/utils/LibString.sol";
 import {console2} from "forge-std/Test.sol";
 
 contract MyNFT is ERC721, Owned {
-    using Strings for uint256;
-
     // required for setting during deployment
     string public baseURI;
 
@@ -21,16 +19,14 @@ contract MyNFT is ERC721, Owned {
 
     /// _uri common base URI for the entire collection set during deployment
     constructor(string memory _n, string memory _s, bytes memory _uri) ERC721(_n, _s) Owned(msg.sender) {
-        if (keccak256(_uri) == keccak256(bytes(""))) {
-            revert EmptyBaseURI();
-        }
+        require(keccak256(_uri) != keccak256(bytes("")), EmptyBaseURI());
         baseURI = string(_uri);
     }
 
     function tokenURI(uint256 id) public view virtual override returns (string memory) {
         ownerOf(id); // it checks for existence/valid token, ensuring there is some owner. Takes gas: 2625 ✅ [RECOMMENDED]
         // require(ownerOf(id) != address(0), "NOT_MINTED"); // alternative approach. Takes gas: 2649 ☑️
-        return string(abi.encodePacked(baseURI, id.toString()));
+        return string(abi.encodePacked(baseURI, LibString.toString(id)));
     }
 
     /// NOTE: We can also place individual base URI for each token in `mint` function
@@ -41,9 +37,7 @@ contract MyNFT is ERC721, Owned {
     }
 
     function burn(uint256 id) external {
-        if (msg.sender != ownerOf(id)) {
-            revert NotOwner(msg.sender);
-        }
+        require(msg.sender == ownerOf(id), NotOwner(msg.sender));
         _burn(id);
 
         emit Burned(msg.sender, id);

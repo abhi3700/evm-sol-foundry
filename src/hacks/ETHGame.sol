@@ -87,7 +87,7 @@ contract Attack {
 
         // cast address to payable
         address payable addr = payable(address(etherGame));
-        selfdestruct(addr);
+        // selfdestruct(addr); // TODO: Need to find an alternative.
         console2.log("ethergame SC address: ", address(etherGame));
     }
 }

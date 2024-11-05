@@ -51,6 +51,7 @@ contract GaslessTokenTransferTest is Test {
     function testGasless() public {
         uint256 deadline = block.timestamp + 60; // now + 60s
 
+        // TODO: As it's consuming 1000 gas, we can offload it to a Offchain function that is zero gas cost.
         bytes32 permitmessageHash = gasless.getPermitHash(
             token.DOMAIN_SEPARATOR(), sender, address(gasless), AMOUNT + FEE, token.nonces(sender), deadline
         );

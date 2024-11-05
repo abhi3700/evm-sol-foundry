@@ -10,7 +10,7 @@ contract Token {
 }
 
 contract AbiEncode {
-    function test(address _contract, bytes calldata data) public {
+    function justCall(address _contract, bytes calldata data) public {
         (bool ok,) = _contract.call(data);
 
         if (!ok) {
